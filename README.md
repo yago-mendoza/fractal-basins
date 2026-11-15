@@ -71,3 +71,12 @@ move files over the RunPod SSH proxy; `tools/pod.sh` runs a command there.
 pip install "loopscape[demos] @ git+https://github.com/GilpinLab/loopscape"
 cd exp && python e1_sudoku_slices.py 200 24 e1_medium_200.npz medium
 ```
+
+## Beyond the paper (E4 to E6, RTX 3090)
+
+| | script | result |
+|---|---|---|
+| E4 | `exp/e4_saddles.py` | Slow starts on the medium Sudoku spend their extra loops about 25 cells from the solution while the latent state keeps moving ~0.3 RMS per loop, then are captured in one or two loops; no stretch spent one or two cells off. On 30 hard Sudokus, slow starts wander ~30 cells away. |
+| GPU | (E4 vs E1) | Same starts on A5000 (E1) and 3090 (E4): smooth region 128/128 identical settle times; speckle 2/88 identical, correlation -0.18. Deterministic on one card, not across cards. |
+| E5 | `exp/e5_difficulty.py` | 36 Sudoku-Extreme puzzles across tdoku-backtrack bands, 32x32 maps: Spearman rho 0.27 (p 0.12) between rating and mean settle time. The six puzzles where the model gets lost are rated 11 to 162; the four hardest (271 to 290) settle in 1 to 7 loops. |
+| E6 | `exp/e6_starts.py`, `exp/e6_policies.py` | 30 held-out hard puzzles x 64 random starts x 64 loops: 95% settle (3 loops unchanged, decided online), 100% of settled answers right. Restart at loop 20 reaches 97.8% at 128 loops vs 96% for one start; CMA-ES start (32-dim subspace, 4 train puzzles) + restarts 99.5%, but no faster than a median random start on held-out puzzles. |
