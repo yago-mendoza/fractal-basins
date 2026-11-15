@@ -16,7 +16,7 @@
 <p align="center">
   <a href="https://arxiv.org/abs/2609.04963"><img src="https://img.shields.io/badge/paper-arXiv%202609.04963-b31b1b" alt="Paper: arXiv 2609.04963"></a>
   <a href="https://github.com/GilpinLab/loopscape"><img src="https://img.shields.io/badge/models%20%26%20metrics-loopscape-6f42c1" alt="Models and metrics: loopscape"></a>
-  <img src="https://img.shields.io/badge/GPU-RTX%20A5000%2C%206%20h%2C%20~1%20USD-3b2a5a" alt="RTX A5000, 6 hours, about 1 USD">
+  <img src="https://img.shields.io/badge/GPU-A5000%20%2B%203090%2C%20~1.4%20USD-3b2a5a" alt="RTX A5000 and RTX 3090, about 1.4 USD">
   <img src="https://img.shields.io/badge/python-3.12-3b2a5a" alt="Python 3.12">
 </p>
 
@@ -30,6 +30,28 @@
 The models and the analysis library are the paper authors': [GilpinLab/loopscape](https://github.com/GilpinLab/loopscape)
 (installed as a dependency on the GPU machine, not vendored here). This repo holds only our
 experiment scripts, results and figures.
+
+## What one run looks like
+
+The model is applied to its own latent state again and again, and after every loop the state is
+decoded into the Sudoku grid it currently believes. Below, one hard Sudoku-Extreme puzzle (rating
+109) from two random starts: blue cells match the solution, orange ones do not. Start A is right
+at loop 4; start B keeps about thirty cells wrong until loop 15 and is right at loop 16. The maps
+above colour every start on a plane by that loop.
+
+<p align="center">
+  <img src="docs/assets/loop-by-loop.gif" width="540" alt="Animation: the same hard Sudoku decoded loop by loop from two starts; start A turns all blue at loop 4, start B stays about thirty cells wrong until loop 15 and turns all blue at loop 16">
+</p>
+
+The three puzzles of the maps (E1), givens only:
+
+<p align="center">
+  <img src="docs/assets/three-sudokus.png" width="760" alt="Three Sudoku grids with their givens: easy with 30, medium and hard with 23 each">
+</p>
+
+`exp/sudoku_figures.py` draws both from the E6 traces (re-picking the held-out puzzles from the
+Sudoku-Extreme test split as `e6_starts.py` does, checked against the stored solutions);
+`exp/video.py` makes the 32 s video in `social/`.
 
 ## Experiments
 
