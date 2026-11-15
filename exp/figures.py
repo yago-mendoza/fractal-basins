@@ -166,3 +166,33 @@ def policies(path, name, k=3):
 
 if len(sys.argv) > 2 and sys.argv[2] == "e6":
     policies("out/e6_policies.json", "start-policies")
+
+
+def difficulty(path, name):
+    """E5: classical difficulty (tdoku backtracks) against how long EqR takes, one dot per puzzle."""
+    d = np.load(path)
+    r, st, un = d["rating"].astype(float), d["settle_mean"], d["unsettled"]
+    lost = un > 0.05
+    fig, ax = plt.subplots(figsize=(8.4, 4.6), facecolor=BG)
+    ax.set_facecolor(BG)
+    ax.scatter(r[~lost], st[~lost], s=46, color="#3987e5", edgecolor=BG, lw=1.5,
+               label="settles from (almost) every start")
+    ax.scatter(r[lost], st[lost], s=46, color="#d95926", edgecolor=BG, lw=1.5,
+               label="more than 5% of starts never settle")
+    ax.set_xscale("symlog", linthresh=1)
+    ax.set_xticks([0, 1, 3, 10, 30, 100, 300]); ax.set_xticklabels(["0", "1", "3", "10", "30", "100", "300"])
+    ax.set_xlabel("backtracks the tdoku solver needs (Sudoku-Extreme rating)")
+    ax.set_ylabel("mean loops for EqR to settle")
+    for s in ("top", "right"):
+        ax.spines[s].set_visible(False)
+    for s in ("left", "bottom"):
+        ax.spines[s].set_color("#3a3a44")
+    ax.grid(axis="y", color="#26262e", lw=0.6)
+    leg = ax.legend(frameon=False, loc="upper left")
+    for t in leg.get_texts():
+        t.set_color(INK)
+    save(fig, name)
+
+
+if len(sys.argv) > 2 and sys.argv[2] == "e5":
+    difficulty("out/e5_difficulty.npz", "classical-difficulty")
