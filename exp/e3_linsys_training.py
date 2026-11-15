@@ -5,7 +5,10 @@ For each checkpoint (ours, from a shortened 60k-step run of loopscape's recipe) 
 released fully trained model, draw the settle-time field on one fixed instance (the
 notebook's: rng seed 10) with loopscape's settle_field, and score it.
 
-usage: python e3_linsys_training.py RUN_DIR RES LOOPS OUT
+usage: python e3_linsys_training.py RUN_DIR RES LOOPS OUT [easy]
+
+With `easy`, use instead the first instance (rng seeds 0, 1, ...) that needs no elimination:
+every unknown can be read off by substitution (peel depth >= 0).
 """
 import glob
 import os
@@ -22,7 +25,15 @@ from loopscape.metrics import basin_entropy, uncertainty_exponent
 run_dir, RES, LOOPS, OUT = sys.argv[1], int(sys.argv[2]), int(sys.argv[3]), sys.argv[4]
 DEV = "cuda"
 
-A, b, x = task.sample_instance(np.random.default_rng(10))
+EASY = len(sys.argv) > 5 and sys.argv[5] == "easy"
+if EASY:
+    for seed in range(1000):
+        A, b, x = task.sample_instance(np.random.default_rng(seed))
+        if (task.peel_depths(A) >= 0).all():
+            print("instance seed", seed, "peel depths", task.peel_depths(A).tolist())
+            break
+else:
+    A, b, x = task.sample_instance(np.random.default_rng(10))
 correct = task.answer_code(x)
 print("needs elimination:", int((task.peel_depths(A) < 0).sum()), "of", len(x), "unknowns", flush=True)
 

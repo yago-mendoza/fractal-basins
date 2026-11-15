@@ -27,7 +27,16 @@ experiment scripts and figures.
 
 E2 zooms (EqR, same plane). Medium, 128x128, 24 loops, 4x per level: widths 0.5 / 0.125 / 0.03125 give alpha 0.263 / 0.344 / 0.185 and Sbb 1.12 / 1.11 / 1.23; the speckled bands persist down to 64x. Hard, 96x96, 48 loops, 10x per level: width 0.2 shows a smooth fast-settling island (alpha 0.008), width 0.02 a clean island edge against the noise (alpha 0.025, Sb drops 2.63 to 1.55).
 
-E3 reference, released linsys model, 64x64, 256 loops, notebook instance (rng 10, all 8 unknowns need elimination): 99.9% correct, settle 40..255 (median 49), Sb 1.94, alpha 0.077.
+E3, linear systems over GF(3), 96x96, 256 loops. Our shortened run (60k of the recipe's 300k steps, RTX A5000, 2.4 h) plateaus at 39.7% of held-out systems solved from step ~20k on (`out/e3_train_log.txt`).
+
+| model | instance | correct | settle (median) | S_b | alpha |
+|---|---|---|---|---|---|
+| ours, steps 2k to 60k | hard (rng 10, 8/8 unknowns need elimination) | 0% | 3 to 23 | 0.002 to 0.53 | 0.52 to 1.01 |
+| released | hard | 99.9% | 40..255 (49) | 1.81 | 0.10 |
+| ours, step 60k | easy (rng 0, all by substitution) | 100% | 7 | 0 | n/a (flat) |
+| released | easy | 100% | 5..7 (6) | 0.06 | 0.95 |
+
+Fractal basins show up only where the instance is hard *and* the model solves it: a model that cannot solve it settles fast and smoothly on a wrong answer, and an easy instance needs no search. Our run never reached the second skill (elimination), so it does not show the transition itself; the full recipe would (~12 h on an A5000).
 
 ## Running
 
