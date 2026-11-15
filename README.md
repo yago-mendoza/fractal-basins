@@ -13,6 +13,15 @@ experiment scripts and figures.
 | | script | what |
 |---|---|---|
 | E1 | `exp/e1_sudoku_slices.py` | EqR basin slices on an easy, a medium and a hard Sudoku: settle time, solved fraction, basin entropy, uncertainty exponent |
+| E2 | `exp/e2_zoom.py` | successive zooms into the most mixed spot of an E1 field |
+
+## Results
+
+| run | grid | loops | solved | distinct final grids | settle (min/median/max) | S_b | S_bb | alpha |
+|---|---|---|---|---|---|---|---|---|
+| easy | 40x40 | 24 | 100% | 1 | 0/0/0 | 0 | 0 | n/a |
+| medium | 200x200 | 24 | 100% | 1 | 1/3/20 | 0.619 | 1.022 | 0.308 |
+| hard | 128x128 | 48 | 88.1% | 1676 | 3/22/47 | 2.737 | 2.737 | 0.000 |
 
 ## Running
 
