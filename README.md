@@ -14,6 +14,8 @@ experiment scripts and figures.
 |---|---|---|
 | E1 | `exp/e1_sudoku_slices.py` | EqR basin slices on an easy, a medium and a hard Sudoku: settle time, solved fraction, basin entropy, uncertainty exponent |
 | E2 | `exp/e2_zoom.py` | successive zooms into the most mixed spot of an E1 field |
+| E3 | `exp/e3_linsys_training.py` | basins of the GF(3) linear-system looped transformer across a shortened (60k-step) run of loopscape's training recipe, against the released model |
+| check | `exp/check_determinism.py` | same starting points in a rerun, a shuffled batch and a mixed batch give identical settle times (0/256 differ): the speckle is the model, not GPU noise |
 
 ## Results
 
@@ -22,6 +24,10 @@ experiment scripts and figures.
 | easy | 40x40 | 24 | 100% | 1 | 0/0/0 | 0 | 0 | n/a |
 | medium | 200x200 | 24 | 100% | 1 | 1/3/20 | 0.619 | 1.022 | 0.308 |
 | hard | 128x128 | 48 | 88.1% | 1676 | 3/22/47 | 2.737 | 2.737 | 0.000 |
+
+E2 zooms (EqR, same plane). Medium, 128x128, 24 loops, 4x per level: widths 0.5 / 0.125 / 0.03125 give alpha 0.263 / 0.344 / 0.185 and Sbb 1.12 / 1.11 / 1.23; the speckled bands persist down to 64x. Hard, 96x96, 48 loops, 10x per level: width 0.2 shows a smooth fast-settling island (alpha 0.008), width 0.02 a clean island edge against the noise (alpha 0.025, Sb drops 2.63 to 1.55).
+
+E3 reference, released linsys model, 64x64, 256 loops, notebook instance (rng 10, all 8 unknowns need elimination): 99.9% correct, settle 40..255 (median 49), Sb 1.94, alpha 0.077.
 
 ## Running
 
