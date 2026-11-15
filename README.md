@@ -1,12 +1,35 @@
-# fractal-basins
+<p align="center">
+  <a href="https://infraphysics.net"><img src="docs/assets/infraphysics.svg" width="72" alt="InfraPhysics"></a>
+</p>
 
-Reproducing the basin-slice experiments of Lai, Bao, Quinn & Gilpin,
-*Fractal basins trap latent reasoning* ([arXiv:2609.04963](https://arxiv.org/abs/2609.04963)),
-on the models they released, for an InfraPhysics Bits2Bricks article.
+<p align="center">
+  <img src="docs/assets/hero.png" width="900" alt="Three square maps of how many loops a looped reasoning model needs to settle on a Sudoku answer, one starting point per pixel: flat black for an easy puzzle, purple folded filaments for a medium one, bright speckle like static for a hard one">
+</p>
 
-The models and the analysis library are theirs: [GilpinLab/loopscape](https://github.com/GilpinLab/loopscape)
+<h1 align="center">fractal-basins</h1>
+
+<p align="center">
+  Reproducing <i>Fractal basins trap latent reasoning</i> (Lai, Bao, Quinn &amp; Gilpin, 2026) on the models they released.<br>
+  Start a looped reasoning model from every point of a plane through its latent space and colour each point by how long it thinks.
+</p>
+
+<p align="center">
+  <a href="https://arxiv.org/abs/2609.04963"><img src="https://img.shields.io/badge/paper-arXiv%202609.04963-b31b1b" alt="Paper: arXiv 2609.04963"></a>
+  <a href="https://github.com/GilpinLab/loopscape"><img src="https://img.shields.io/badge/models%20%26%20metrics-loopscape-6f42c1" alt="Models and metrics: loopscape"></a>
+  <img src="https://img.shields.io/badge/GPU-RTX%20A5000%2C%206%20h%2C%20~1%20USD-3b2a5a" alt="RTX A5000, 6 hours, about 1 USD">
+  <img src="https://img.shields.io/badge/python-3.12-3b2a5a" alt="Python 3.12">
+</p>
+
+<p align="center">
+  <b>A side project of <a href="https://infraphysics.net">InfraPhysics</a>.</b>
+  The write-up will be a Bits2Bricks article at <a href="https://infraphysics.net/blog/bits2bricks">infraphysics.net/blog/bits2bricks</a>.
+</p>
+
+---
+
+The models and the analysis library are the paper authors': [GilpinLab/loopscape](https://github.com/GilpinLab/loopscape)
 (installed as a dependency on the GPU machine, not vendored here). This repo holds only our
-experiment scripts and figures.
+experiment scripts, results and figures.
 
 ## Experiments
 
@@ -15,6 +38,7 @@ experiment scripts and figures.
 | E1 | `exp/e1_sudoku_slices.py` | EqR basin slices on an easy, a medium and a hard Sudoku: settle time, solved fraction, basin entropy, uncertainty exponent |
 | E2 | `exp/e2_zoom.py` | successive zooms into the most mixed spot of an E1 field |
 | E3 | `exp/e3_linsys_training.py` | basins of the GF(3) linear-system looped transformer across a shortened (60k-step) run of loopscape's training recipe, against the released model |
+| hero | `exp/hero.py` | the README strip, from the E1 fields |
 | check | `exp/check_determinism.py` | same starting points in a rerun, a shuffled batch and a mixed batch give identical settle times (0/256 differ): the speckle is the model, not GPU noise |
 
 ## Results
