@@ -54,8 +54,10 @@ def single(field, name, vmax):
 
 e1m = np.load("out/e1_medium_200.npz")
 e1h = np.load("out/e1_hard_128.npz")
-single(e1m["medium_settle"], "medium-sudoku-basin", 20)
-single(e1h["hard_settle"], "hard-sudoku-basin", 48)
+ALL = len(sys.argv) <= 2
+if ALL:
+    single(e1m["medium_settle"], "medium-sudoku-basin", 20)
+    single(e1h["hard_settle"], "hard-sudoku-basin", 48)
 
 
 def zoom(path, name, labels, vmax):
@@ -73,8 +75,9 @@ def zoom(path, name, labels, vmax):
     save(fig, name)
 
 
-zoom("out/e2_medium_zoom.npz", "medium-zoom", ["whole slice", "4x", "16x", "64x"], 23)
-zoom("out/e2_hard_zoom.npz", "hard-zoom", ["whole slice", "10x", "100x"], 48)
+if ALL:
+    zoom("out/e2_medium_zoom.npz", "medium-zoom", ["whole slice", "4x", "16x", "64x"], 23)
+    zoom("out/e2_hard_zoom.npz", "hard-zoom", ["whole slice", "10x", "100x"], 48)
 
 
 def linsys(path, name, label_of):
@@ -91,5 +94,75 @@ def linsys(path, name, label_of):
 
 
 lab = lambda t: "released" if t == "released" else f"step {int(t[4:]) // 1000}k"
-linsys("out/e3_linsys.npz", "linsys-training", lab)
-linsys("out/e3_linsys_easy.npz", "linsys-easy-instance", lambda t: "released" if t == "released" else "ours, step 60k")
+if ALL:
+    linsys("out/e3_linsys.npz", "linsys-training", lab)
+    linsys("out/e3_linsys_easy.npz", "linsys-easy-instance", lambda t: "released" if t == "released" else "ours, step 60k")
+
+
+def saddles(path, name):
+    """E4: wrong cells and latent step size per loop, fast vs slow starts (median, IQR, a few traces)."""
+    d = np.load(path)
+    col = {"fast": "#3987e5", "slow": "#d95926"}
+    lab = {"fast": "fast starts (smooth region)", "slow": "slow starts (speckle)"}
+    fig, axs = plt.subplots(1, 2, figsize=(12, 4.4), facecolor=BG)
+    for ax, key, ylab, logy in [(axs[0], "wrong", "cells different from the solution", False),
+                                (axs[1], "step", "how far the latent state moves", True)]:
+        ax.set_facecolor(BG)
+        for g in ("fast", "slow"):
+            y = d[f"{g}_{key}"].astype(float)
+            x = np.arange(1, y.shape[1] + 1)
+            for tr in y[:6]:
+                ax.plot(x, tr, color=col[g], lw=0.8, alpha=0.25)
+            q1, med, q3 = np.percentile(y, [25, 50, 75], axis=0)
+            ax.fill_between(x, q1, q3, color=col[g], alpha=0.18, lw=0)
+            ax.plot(x, med, color=col[g], lw=2, label=lab[g])
+        ax.set_xlabel("loop"); ax.set_ylabel(ylab)
+        if logy:
+            ax.set_yscale("log")
+        for s in ("top", "right"):
+            ax.spines[s].set_visible(False)
+        for s in ("left", "bottom"):
+            ax.spines[s].set_color("#3a3a44")
+        ax.grid(axis="y", color="#26262e", lw=0.6)
+    leg = axs[0].legend(frameon=False, loc="upper right")
+    for t in leg.get_texts():
+        t.set_color(INK)
+    save(fig, name)
+
+
+if len(sys.argv) > 2 and sys.argv[2] == "e4":
+    saddles("out/e4_saddles.npz", "slow-starts")
+
+
+def policies(path, name, k=3):
+    """E6: share of held-out hard Sudokus answered right against the loop budget, per policy."""
+    import json
+    res = json.load(open(path))
+    budgets = sorted({int(key.split("_B")[1]) for key in res if key.startswith(f"k{k}_B")})
+    series = [("wait", "one random start, wait", "#8a8a98"),
+              ("restart20", "restart if not settled by loop 20", "#3987e5"),
+              ("evolved+restart30", "evolved start, then restarts", "#d95926")]
+    fig, ax = plt.subplots(figsize=(8.4, 4.6), facecolor=BG)
+    ax.set_facecolor(BG)
+    for key, label, c in series:
+        bs = [b for b in budgets if key != "wait" or b <= 64]   # one start's trace ends at loop 64
+        y = [100 * res[f"k{k}_B{b}"][key][0] for b in bs]
+        ax.plot(bs, y, color=c, lw=2, marker="o", ms=6, label=label)
+        ax.annotate(f"{y[-1]:.1f}%", (bs[-1], y[-1]), xytext=(8, 0), textcoords="offset points",
+                    color=INK, va="center", fontsize=10)
+    ax.set_ylim(90, 100.5)
+    ax.set_xlabel("loop budget per puzzle"); ax.set_ylabel("puzzles answered right (%)")
+    ax.set_xticks(budgets)
+    for s in ("top", "right"):
+        ax.spines[s].set_visible(False)
+    for s in ("left", "bottom"):
+        ax.spines[s].set_color("#3a3a44")
+    ax.grid(axis="y", color="#26262e", lw=0.6)
+    leg = ax.legend(frameon=False, loc="lower right")
+    for t in leg.get_texts():
+        t.set_color(INK)
+    save(fig, name)
+
+
+if len(sys.argv) > 2 and sys.argv[2] == "e6":
+    policies("out/e6_policies.json", "start-policies")
