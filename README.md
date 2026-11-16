@@ -51,7 +51,7 @@ The three puzzles of the maps (E1), givens only:
 
 `exp/sudoku_figures.py` draws both from the E6 traces (re-picking the held-out puzzles from the
 Sudoku-Extreme test split as `e6_starts.py` does, checked against the stored solutions);
-`exp/video.py` makes the 32 s video in `social/`.
+`exp/video.py` makes the one-minute video in `social/` from one run on one GPU (`exp/v1_medium_traces.py`, `exp/v1_pick.py`, then `exp/e2_zoom.py` on that map down to 256x).
 
 ## Experiments
 
